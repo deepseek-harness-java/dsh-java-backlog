@@ -1,0 +1,19 @@
+server:
+  port: 8109
+
+spring:
+  application:
+    name: dsh-java-backlog
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          no-cache: true
+  jackson:
+    default-property-inclusion: non_null
+
+dsh:
+  backlog:
+    data-directory: ${user.home}/.dsh-java-backlog
+    harness:
+      base-url: ${DSH_HARNESS_BASE_URL:http://127.0.0.1:8090}

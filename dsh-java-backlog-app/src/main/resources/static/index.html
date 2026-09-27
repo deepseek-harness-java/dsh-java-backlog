@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DSH Backlog Shaper</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">BS</div>
+      <div><strong>Backlog Shaper</strong><span>Powered by Harness</span></div>
+    </div>
+    <button class="primary block" id="newConversation">＋ 新对话</button>
+    <div class="section-label"><span>对话记录</span></div>
+    <div id="conversationList" class="item-list conversation-list"></div>
+  </aside>
+
+  <main class="main">
+    <header class="main-header">
+      <div>
+        <div class="title-row">
+          <span id="statusDot" class="dot"></span>
+          <h1 id="currentName">需求整理台</h1>
+        </div>
+        <p id="currentDetail">主题聚类、用户故事、优先级矩阵、验收标准草稿（只给建议，团队拍板）</p>
+      </div>
+      <div class="header-actions">
+        <button class="ghost" id="openPriority">📊 优先级矩阵</button>
+        <button class="ghost icon-btn" id="toggleTheme" title="切换主题">🌙</button>
+      </div>
+    </header>
+
+    <div id="workspace" class="workspace">
+      <section class="center">
+        <div id="chatMessages" class="chat-scroll"></div>
+        <div class="composer-wrap">
+          <div id="streamStatus" class="stream-status hidden">
+            <span id="streamStatusText"><span class="status-spinner"></span>AI 正在思考</span>
+          </div>
+          <div class="composer">
+            <textarea id="chatInput" rows="1" placeholder="例如：这些用户反馈先做哪些？（粘贴零散需求/反馈，每行一条）"></textarea>
+            <div class="composer-bar">
+              <span class="composer-hint"><kbd>⌘</kbd>+<kbd>↵</kbd> 发送 · 只读整理，优先级需团队拍板</span>
+              <div class="composer-actions">
+                <button class="ghost small hidden" id="stopStream">停止</button>
+                <button class="send-btn" id="sendMessage" title="发送">↑</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="resource-sidebar">
+        <div class="resource-scroll">
+          <div class="resource-header">
+            <b>整理工作台</b>
+            <button class="ghost small" id="refreshResource">刷新</button>
+          </div>
+          <nav class="resource-tabs">
+            <button data-resource-tab="ingest" class="active">条目</button>
+            <button data-resource-tab="themes">主题</button>
+            <button data-resource-tab="story">故事</button>
+            <button data-resource-tab="accept">验收</button>
+          </nav>
+          <section class="panel" data-tab="ingest">
+            <div class="panel-title"><span>条目解析</span></div>
+            <div class="panel-body" style="padding:8px">
+              <textarea id="ingestInput" rows="9" style="width:100%;font-family:ui-monospace,Menlo,monospace;font-size:12px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box" placeholder="1. 登录页验证码经常超时&#10;2. 希望订单支持批量导出 Excel&#10;3. App 在 iOS 上偶现闪退"></textarea>
+              <div style="margin-top:8px"><button class="ghost small" id="ingestBtn">解析条目</button></div>
+              <div id="ingestResult" class="muted" style="margin-top:8px">条目编号 / 类型 / 置信度</div>
+            </div>
+          </section>
+          <section class="panel hidden" data-tab="themes">
+            <div class="panel-title"><span>主题聚类</span></div>
+            <div class="panel-body" style="padding:8px">
+              <textarea id="themesInput" rows="9" style="width:100%;font-family:ui-monospace,Menlo,monospace;font-size:12px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box" placeholder="粘贴需求/反馈文本…"></textarea>
+              <div style="margin-top:8px"><button class="ghost small" id="themesBtn">聚类</button></div>
+              <div id="themesResult" class="muted" style="margin-top:8px">主题分布与代表条目</div>
+            </div>
+          </section>
+          <section class="panel hidden" data-tab="story">
+            <div class="panel-title"><span>用户故事草稿</span></div>
+            <div class="panel-body" style="padding:8px">
+              <textarea id="storyInput" rows="9" style="width:100%;font-family:ui-monospace,Menlo,monospace;font-size:12px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box" placeholder="粘贴需求/反馈文本…"></textarea>
+              <div style="margin-top:8px"><button class="ghost small" id="storyBtn">生成故事</button></div>
+              <div id="storyResult" class="muted" style="margin-top:8px">作为…我希望…以便…</div>
+            </div>
+          </section>
+          <section class="panel hidden" data-tab="accept">
+            <div class="panel-title"><span>验收标准草稿</span></div>
+            <div class="panel-body" style="padding:8px">
+              <textarea id="acceptInput" rows="9" style="width:100%;font-family:ui-monospace,Menlo,monospace;font-size:12px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box" placeholder="粘贴需求/反馈文本…"></textarea>
+              <div style="margin-top:8px"><button class="ghost small" id="acceptBtn">生成验收</button></div>
+              <div id="acceptResult" class="muted" style="margin-top:8px">Given / When / Then</div>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="modal hidden" id="priorityModal">
+    <form class="modal-card" id="priorityForm" style="width:640px">
+      <h2>📊 优先级矩阵</h2>
+      <label>需求文本<textarea name="text" required rows="12" style="font-family:ui-monospace,Menlo,monospace;font:inherit;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);box-sizing:border-box" placeholder="1. 所有用户反馈登录验证码超时严重&#10;2. 希望订单支持批量导出 Excel&#10;3. 涉及底层架构重构的全文检索"></textarea></label>
+      <p class="muted small">价值/成本打分 + 四象限，仅为规则建议，最终优先级需团队拍板。</p>
+      <div class="modal-actions"><button type="button" class="ghost" id="cancelPriorityModal">取消</button><button class="primary">分析</button></div>
+    </form>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

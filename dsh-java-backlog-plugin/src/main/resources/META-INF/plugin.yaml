@@ -1,0 +1,6 @@
+id: dsh-java-backlog-plugin
+name: DSH Backlog Plugin
+version: 0.1.0
+author: Xiaofuge
+description: Team bilingual glossary tools (lookup, add term, mine from doc, bilingual card, conflict check) for DeepSeek Harness.
+entrypoint: cn.xiaofuge.dsh.bl.plugin.DshBacklogPlugin
